@@ -294,3 +294,13 @@ ventas = ts(na.omit(dulces$Ventas), frequency=30)
 decomp = stl(ventas, s.window="periodic")
 deseasonal_cnt <- seasadj(decomp)
 plot(decomp)
+
+#La regresión lineal no fue relevante en este caso
+marsrlm <- datasetMars %>% 
+  group_by(Mes) %>% 
+  summarise(Ventas=sum(Ventas))
+sample <- sample.split(marsrlm$Ventas, SplitRatio=4/5, group=NULL)
+trainingset <- subset(marsrlm, split=TRUE)
+testset <- subset(marsrlm, split=FALSE)
+rlm <- lm(Ventas~., trainingset)
+summary(rlm)
