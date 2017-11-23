@@ -6,6 +6,9 @@ library(ggplot2)
 library(plotly)
 library(tidyr)
 library(reshape2)
+library(forecast)
+library(tseries)
+library(caTools)
 
 #Juntar Datasets
 Parte1 <- read_csv(paste(getwd(), "/Proyecto final parte 1.csv", sep = ""))
@@ -25,10 +28,10 @@ datasetfinal$`Dept Desc` <- as.factor(datasetfinal$`Dept Desc`)
 colnames(datasetfinal)[1:4] <- c("Tienda", "Proveedor", "Marca", "Departamento")
 
 datasetfinal$Marca <- as.character(datasetfinal$Marca)
-datasetfinal$Marca[datasetfinal$Marca == "M & M"] <- "M&M'S"
+datasetfinal$Marca[datasetfinal$Marca == "M & M"] <- "M&M'S" #Todos los M&M's en el mismo formato
 datasetfinal$Marca[datasetfinal$Marca == "M&MS"] <- "M&M'S"
 datasetfinal$Marca[datasetfinal$Marca == "M&M"] <- "M&M'S"
-datasetfinal$Marca[datasetfinal$Marca == "M&M¾S_MARS"] <- "M&M'S"
+datasetfinal$Marca[datasetfinal$Marca == "M&MÂ¾S_MARS"] <- "M&M'S"
 datasetfinal$Marca[datasetfinal$Marca == "M&M_S MARS"] <- "M&M'S"
 datasetfinal$Marca[datasetfinal$Marca == "SNIKERS MARS"] <- "SNICKERS"
 datasetfinal$Marca[datasetfinal$Marca == "& CAF<e5>"] <- "&CAFE"
