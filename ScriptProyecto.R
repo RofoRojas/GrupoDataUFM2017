@@ -167,13 +167,13 @@ b
 datasetMars<-datasetfinal %>% 
   filter(Tienda== "Despensa Familiar", Proveedor=="Mars", Marca!="MUNCHKIN", Marca!="MARS")
 
+#Gráfica de ventas de Mars por día de la semana
 e<- datasetMars %>% 
   group_by(Marca, Dia.Semana) %>% 
   summarise(Ventas=sum(Ventas))%>%
   plot_ly(x = ~Dia.Semana, y = ~Ventas, color= ~Marca, colors = "Paired", type = 'bar')%>%
   layout(title = 'Ventas de Mars por dia de la semana')
 e
-
 
 #Pie de la distribucion del proveedor Mars en los departamentos de tienda
 pm <-datasetMars %>% 
@@ -236,7 +236,7 @@ pds
 datasetGolosinas <- datasetMars %>% 
   filter(Departamento!="PETS AND SUPPLIES")
 
-##Historico de Golosinas en anio
+##Historico de Golosinas en año
 f<- datasetGolosinas %>% 
   group_by(Marca, Fecha) %>% 
   summarise(Ventas=sum(Ventas))%>%
@@ -262,7 +262,6 @@ g<- datasetGolosinas %>%
   layout(title = 'Ventas de Golosinas Por dia del Mes') 
 g
 
-
 #Ventas de Golosinas Por Semana
 h<- datasetGolosinas %>% 
   filter(Marca!="TWIX")%>%
@@ -278,3 +277,20 @@ prom <-datasetGolosinas %>%
   plot_ly( x = ~Mes, y = ~Ventas, color = ~Marca, type = "box", boxpoints = 'suspectedoutliers') %>%
   layout(boxmode = "group", title = 'Promedios Mensuales')
 prom
+
+#Por último se hizo un modelo de estacionalidad
+#Se confirmo lo expuesto en las gráficas
+#Hay picos en día del cariño, día del niño y noche buena
+#Se espera que las tendencias se mantengan por lo que la tienda debe estar preparada con suficientes productos
+ventas = ts(na.omit(datasetMars$Ventas), frequency=30) #frecuencia puede ser 7,12,30
+decomp = stl(ventas, s.window="periodic")
+deseasonal_cnt <- seasadj(decomp)
+plot(decomp)
+
+#Los picos son especialmente en el área de dulces, no en el área de mascotas
+dulces <-datasetMars %>% 
+  filter(Departamento!="PETS AND SUPPLIES")
+ventas = ts(na.omit(dulces$Ventas), frequency=30)
+decomp = stl(ventas, s.window="periodic")
+deseasonal_cnt <- seasadj(decomp)
+plot(decomp)
