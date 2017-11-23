@@ -18,11 +18,13 @@ datasetfinal <- rbind(Parte1, Parte2)
 rm(Parte1)
 rm(Parte2)
 
+
 ##Convertir en factores
 datasetfinal$Formato <- as.factor(datasetfinal$Formato)
 datasetfinal$Proveedor <- as.factor(datasetfinal$Proveedor)
 datasetfinal$`Brand Desc` <- as.factor(datasetfinal$`Brand Desc`)
 datasetfinal$`Dept Desc` <- as.factor(datasetfinal$`Dept Desc`)
+
 
 #Cambiar y agrupar nombres
 colnames(datasetfinal)[1:4] <- c("Tienda", "Proveedor", "Marca", "Departamento")
@@ -37,6 +39,7 @@ datasetfinal$Marca[datasetfinal$Marca == "SNIKERS MARS"] <- "SNICKERS"
 datasetfinal$Marca[datasetfinal$Marca == "& CAF<e5>"] <- "&CAFE"
 datasetfinal$Marca <- as.factor(datasetfinal$Marca)
 
+
 ##Intento de agrupar segun las fechas
 #nombres<- data.frame(1:370, names(datasetfinal))
 #colnames(nombres) <- c("No", "Fechas")
@@ -46,14 +49,17 @@ datasetfinal$Marca <- as.factor(datasetfinal$Marca)
 #nombres <- nombres %>% 
  #mutate(Mes=month(Fechas, label = F), Dia.Semana = wday(Fechas, label = F), No.Dia = yday(Fechas), No.Semana = week(Fechas))
 
+
 #Hacerlo Vertical
 datasetfinal<- gather(datasetfinal, Fecha, Ventas, 5:370, na.rm = TRUE)
 #Hacerlo tipo fecha
 datasetfinal$Fecha <- dmy(datasetfinal$Fecha)
 
+
 #Crear columnas para agrupar
 datasetfinal <- datasetfinal %>% 
   mutate(Mes=month(Fecha, label = T, abbr=T ), Dia.Semana = wday(Fecha, label = T, abbr=T), No.Dia.Mes= mday(Fecha), No.Dia.Year = yday(Fecha), No.Semana = isoweek(Fecha))
+
 
 #resumenes por tienda, departamento, marca, proveedor y mes
 resumen <- datasetfinal %>% 
@@ -73,8 +79,10 @@ resumenprov <- datasetfinal %>%
 
 resumentienda <- aggregate(Ventas~Tienda, data=resumen, sum) 
 
+
 # GRÁFICAS
 # Permiten entender más fácilmente el dataset
+
 #Pie de Tiendas
 rt <- plot_ly(resumentienda, labels = ~Tienda, values = ~Ventas, type = 'pie',
               textposition = 'inside',
@@ -87,7 +95,6 @@ rt <- plot_ly(resumentienda, labels = ~Tienda, values = ~Ventas, type = 'pie',
 rt
 ##a partir de esta grafica nos enfocaremos en la distribucion unicamente para Despensa Familiar
 ##la maxidespensa no tiene relevancia en el dataset
-
 
 #Pie de Marcas, Error por UTF8
 rm <- plot_ly(resumenbrand, labels = ~Marca, values = ~Ventas, type = 'pie',
@@ -196,7 +203,6 @@ l<- datasetfinal %>%
   summarise(Ventas=sum(Ventas))%>%
   plot_ly(x = ~Fecha, y = ~Ventas, colors = "Dark2", mode = 'lines', type = 'scatter')%>%
   layout(title = 'Ventas de Mars')
-
 l
 
 #Pie de la distribucion de las Ventas de Mars de PETS AND SUPPLIES por Dia de la Semana
@@ -278,6 +284,8 @@ prom <-datasetGolosinas %>%
   layout(boxmode = "group", title = 'Promedios Mensuales')
 prom
 
+
+
 #Por último se hizo un modelo de estacionalidad
 #Se confirmo lo expuesto en las gráficas
 #Hay picos en día del cariño, día del niño y noche buena
@@ -287,6 +295,7 @@ decomp = stl(ventas, s.window="periodic")
 deseasonal_cnt <- seasadj(decomp)
 plot(decomp)
 
+
 #Los picos son especialmente en el área de dulces, no en el área de mascotas
 dulces <-datasetMars %>% 
   filter(Departamento!="PETS AND SUPPLIES")
@@ -294,6 +303,8 @@ ventas = ts(na.omit(dulces$Ventas), frequency=30)
 decomp = stl(ventas, s.window="periodic")
 deseasonal_cnt <- seasadj(decomp)
 plot(decomp)
+
+
 
 #La regresión lineal no fue relevante en este caso
 marsrlm <- datasetMars %>% 
