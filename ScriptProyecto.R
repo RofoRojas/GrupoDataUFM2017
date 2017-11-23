@@ -1,4 +1,3 @@
-#Hola
 library(readr)
 library(dplyr)
 library(lubridate)
@@ -6,6 +5,8 @@ library(ggplot2)
 library(plotly)
 library(tidyr)
 library(reshape2)
+library(forecast)
+library(tseries)
 
 #Juntar Datasets
 Parte1 <- read_csv(paste(getwd(), "/Proyecto final parte 1.csv", sep = ""))
@@ -273,3 +274,22 @@ prom <-datasetGolosinas %>%
   plot_ly( x = ~Mes, y = ~Ventas, color = ~Marca, type = "box", boxpoints = 'suspectedoutliers') %>%
   layout(boxmode = "group", title = 'Promedios Mensuales')
 prom
+
+#promedios golosina por Semanas
+promS <-datasetGolosinas %>% 
+  filter(Marca!="TWIX")%>%
+  plot_ly( x = ~No.Semana, y = ~Ventas, color = ~Marca, type = "box", boxpoints = 'suspectedoutliers') %>%
+  layout(boxmode = "group", title = 'Promedios Semanales')
+promS
+
+
+#Se decidió hacer un modelo en donde se pudiera observar la estacionalidad 
+#de los datos. Las gráficas que se obtuvieron confirman que las ventas 
+#son mayores en día del cariño, día del niño y noche buena, por lo que es 
+#importante tener suficientes productos para estas fechas.
+
+#Seasonal Component
+ventas = ts(na.omit(datasetMars$Ventas), frequency=30) #frecuencia puede ser 7,12,30
+decomp = stl(ventas, s.window="periodic")
+deseasonal_cnt <- seasadj(decomp)
+plot(decomp)
