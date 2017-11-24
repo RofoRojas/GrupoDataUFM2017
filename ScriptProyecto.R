@@ -1,3 +1,8 @@
+Sys.setenv("plotly_username"="jimenasr")
+Sys.setenv("plotly_api_key"="hjPPAHkYGxPpUjNTmKUk")
+#por cada grafica
+api_create(p, filename = "hola")
+
 library(readr)
 library(dplyr)
 library(lubridate)
